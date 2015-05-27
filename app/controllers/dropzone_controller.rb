@@ -10,7 +10,7 @@ class DropzoneController < ApplicationController
     if dropzone_object.save
       render json: dropzone_object.to_json
     else
-      head :error and return
+      render json: dropzone_object.errors
     end
   end
 

@@ -4,7 +4,7 @@ module ActiveAdmin::ViewHelpers::DropzoneHelper
     dropzone_objects.map do |dropzone_object|
       {
         id: dropzone_object.id,
-        name: dropzone_object.send(dropzone_object.class.dropzone_field(:title)).squish,
+        name: dropzone_object.send(dropzone_object.class.dropzone_field(:title)),
         size: dropzone_object.send(dropzone_object.class.dropzone_field(:file_size)),
         url: dropzone_object.send(dropzone_object.class.dropzone_field(:url))
       }

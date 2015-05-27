@@ -8,44 +8,35 @@ module Activeadmin
           def self.dropzone_#{ association_name }_class
             self.reflect_on_association(:#{ association_name }).class_name.constantize
           end
-
           def #{ association_name }_attributes=(attributes)
             original_collection = self.#{ association_name }.to_a
-
             ActiveRecord::Base.transaction do
-              self.#{ association_name } = self.class.dropzone_#{ association_name }_class.find(attributes.select{ |id, hash| !id.blank? and id != '-1' }.map{ |id, hash| id.to_i })
-
+              ids = attributes.map{ |id, hash| hash[self.class.dropzone_#{ association_name }_class.dropzone_field(:id)] }
+              self.#{ association_name } = self.class.dropzone_#{ association_name }_class.find(ids)
               self.#{ association_name }.each do |dropzone_object|
-                attribute = attributes[dropzone_object.id.to_s]
+                attribute = attributes.select{|key, hash| hash["id"] == dropzone_object.id }.to_a.last.last
                 changes = {}
-
                 title_field = self.class.dropzone_#{ association_name }_class.dropzone_field(:title)
                 if dropzone_object.respond_to?(title_field) and dropzone_object.send(title_field) != attribute['title']
                   changes[title_field] = attribute['title']
                 end
-
                 position_field = self.class.dropzone_#{ association_name }_class.dropzone_field(:position)
                 if dropzone_object.respond_to?(position_field) and dropzone_object.send(position_field) != attribute['position'].to_i
                   changes[position_field] = attribute['position']
                 end
-
                 unless changes.empty?
                   dropzone_object.update_attributes changes
                 end
               end
-
               self.update_attribute :#{ association_name }_count, self.#{ association_name }.count if self.respond_to?(:#{ association_name }_count)
-
               (original_collection - self.#{ association_name }).each do |object|
                 object.destroy
               end
             end
           end
-
           def self.dropzone_#{ association_name }_field(key)
             dropzone_#{ association_name }_class.dropzone_field(key)
           end
-
           def self.dropzone_#{ association_name }_field?(key)
             dropzone_#{ association_name }_class.dropzone_field?(key)
           end
