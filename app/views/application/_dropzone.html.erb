@@ -1,4 +1,4 @@
-<div id="dropzone_<%= method %>_<%= cycle(*(1..999).to_a, name: method) %>" class="dropzone" data-total="object.send(method).count">
+<div id="dropzone_<%= method %>_<%= cycle(*(1..999).to_a, name: method) %>" class="dropzone" data-total="<%=object.send(method).count%>">
   <span class="notice"><%=t 'dropzone.drag_or_click' %></span>
   <% object.send(method).each_with_index do |dropzone_object, index|
     object_id = dropzone_object[object.class.send("dropzone_#{ method }_field", :id)]
@@ -95,6 +95,7 @@
           e.preventDefault();
         }
       } else {
+        alert(1);
         generate_dropzone_position_elements();
       }
     });
